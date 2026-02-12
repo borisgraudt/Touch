@@ -29,6 +29,7 @@ struct ChatsView: View {
                                 } label: {
                                     Image(systemName: "trash.fill")
                                 }
+                                .tint(.red)
 
                                 Button {
                                     viewModel.toggleMute(id: chat.id)
@@ -43,7 +44,8 @@ struct ChatsView: View {
                                 } label: {
                                     Image(systemName: chat.isPinned ? "pin.slash.fill" : "pin.fill")
                                 }
-                                .tint(.blue)
+                                .tint(.green)
+
                             }
                         }
                     }

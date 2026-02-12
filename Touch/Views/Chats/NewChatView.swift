@@ -145,18 +145,20 @@ struct NewChatView: View {
         let request = CNContactFetchRequest(keysToFetch: keys)
         request.sortOrder = .givenName
 
-        var result: [ContactItem] = []
-        try? store.enumerateContacts(with: request) { contact, _ in
-            let fullName = [contact.givenName, contact.familyName]
-                .filter { !$0.isEmpty }
-                .joined(separator: " ")
-            guard !fullName.isEmpty else { return }
-            let phone = contact.phoneNumbers.first?.value.stringValue
-            result.append(ContactItem(name: fullName, phone: phone))
-        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            var result: [ContactItem] = []
+            try? store.enumerateContacts(with: request) { contact, _ in
+                let fullName = [contact.givenName, contact.familyName]
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " ")
+                guard !fullName.isEmpty else { return }
+                let phone = contact.phoneNumbers.first?.value.stringValue
+                result.append(ContactItem(name: fullName, phone: phone))
+            }
 
-        DispatchQueue.main.async {
-            contacts = result
+            DispatchQueue.main.async {
+                self.contacts = result
+            }
         }
     }
 }

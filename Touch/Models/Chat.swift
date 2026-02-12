@@ -6,6 +6,7 @@ struct Chat: Identifiable {
     var messages: [Message]
     var isMuted: Bool
     var isPinned: Bool
+    var isRead: Bool = true
     var lastMessageText: String {
         messages.last?.text ?? ""
     }
