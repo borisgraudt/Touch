@@ -4,7 +4,8 @@ struct CallsView: View {
     @State private var selectedFilter: CallFilter = .all
     @State private var searchText = ""
 
-    enum CallFilter: String, CaseIterable {
+    enum CallFilter: String, CaseIterable, Identifiable {
+        var id: String { rawValue }
         case all = "All"
         case missed = "Missed"
     }
@@ -60,9 +61,17 @@ struct CallsView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     AvatarView()
                 }
+
                 ToolbarItem(placement: .principal) {
-                    GlassPicker(selection: $selectedFilter)
+                    Picker("Filter", selection: $selectedFilter) {
+                        ForEach(CallFilter.allCases) { filter in
+                            Text(filter.rawValue).tag(filter)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 160)
                 }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { } label: {
                         Image(systemName: "phone.badge.plus")
@@ -72,52 +81,5 @@ struct CallsView: View {
                 }
             }
         }
-    }
-}
-
-// MARK: - Glass-style segmented picker with sliding animation
-
-struct GlassPicker: View {
-    @Binding var selection: CallsView.CallFilter
-
-    private let segmentWidth: CGFloat = 70
-
-    private var selectedIndex: Int {
-        CallsView.CallFilter.allCases.firstIndex(of: selection) ?? 0
-    }
-
-    var body: some View {
-        ZStack(alignment: .leading) {
-            // Sliding glass indicator
-            Capsule()
-                .fill(.thinMaterial)
-                .shadow(color: .black.opacity(0.1), radius: 6, y: 2)
-                .frame(width: segmentWidth, height: 32)
-                .offset(x: CGFloat(selectedIndex) * segmentWidth + 4)
-
-            // Buttons
-            HStack(spacing: 0) {
-                ForEach(CallsView.CallFilter.allCases, id: \.self) { filter in
-                    Button {
-                        withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
-                            selection = filter
-                        }
-                    } label: {
-                        Text(filter.rawValue)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .frame(width: segmentWidth, height: 32)
-                            .foregroundStyle(.primary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-        .padding(4)
-        .background(
-            Capsule()
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
-        )
     }
 }
