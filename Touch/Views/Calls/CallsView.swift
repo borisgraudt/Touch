@@ -3,6 +3,7 @@ import SwiftUI
 struct CallsView: View {
     @State private var selectedFilter: CallFilter = .all
     @State private var searchText = ""
+    @State private var showSettings = false
 
     enum CallFilter: String, CaseIterable, Identifiable {
         var id: String { rawValue }
@@ -59,7 +60,12 @@ struct CallsView: View {
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    AvatarView()
+                    Button {
+                        showSettings = true
+                    } label: {
+                        AvatarView()
+                    }
+                    .buttonStyle(.plain)
                 }
 
                 ToolbarItem(placement: .principal) {
@@ -79,6 +85,9 @@ struct CallsView: View {
                             .foregroundStyle(.primary)
                     }
                 }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
             }
         }
     }

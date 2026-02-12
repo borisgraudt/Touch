@@ -22,4 +22,5 @@ struct MainTabView: View {
 #Preview {
     MainTabView()
         .environment(ChatViewModel())
+        .environment(UserProfile())
 }

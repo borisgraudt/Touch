@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ChatsView: View {
     @Environment(ChatViewModel.self) private var viewModel
+    @Environment(UserProfile.self) private var profile
     @State private var showNewChat = false
+    @State private var showSettings = false
     @State private var searchText = ""
 
     var body: some View {
@@ -21,8 +23,29 @@ struct ChatsView: View {
                             NavigationLink(destination: ChatDetailView(chat: chat)) {
                                 ChatRow(chat: chat)
                             }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    viewModel.deleteChat(id: chat.id)
+                                } label: {
+                                    Image(systemName: "trash.fill")
+                                }
+
+                                Button {
+                                    viewModel.toggleMute(id: chat.id)
+                                } label: {
+                                    Image(systemName: chat.isMuted ? "bell.fill" : "bell.slash.fill")
+                                }
+                                .tint(.orange)
+                            }
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                Button {
+                                    viewModel.togglePin(id: chat.id)
+                                } label: {
+                                    Image(systemName: chat.isPinned ? "pin.slash.fill" : "pin.fill")
+                                }
+                                .tint(.blue)
+                            }
                         }
-                        .onDelete(perform: viewModel.deleteChat)
                     }
                     .listStyle(.plain)
                 }
@@ -31,7 +54,12 @@ struct ChatsView: View {
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    AvatarView()
+                    Button {
+                        showSettings = true
+                    } label: {
+                        AvatarView()
+                    }
+                    .buttonStyle(.plain)
                 }
                 ToolbarItem(placement: .principal) {
                     Text("Chats")
@@ -46,14 +74,14 @@ struct ChatsView: View {
                             .font(.system(size: 18))
                             .foregroundStyle(.primary)
                             .frame(width: 32, height: 32)
-
-                                    
-                        
                     }
                 }
             }
             .sheet(isPresented: $showNewChat) {
                 NewChatView()
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
             }
         }
     }
@@ -71,11 +99,21 @@ struct ChatsView: View {
 // MARK: - Avatar
 
 struct AvatarView: View {
+    @Environment(UserProfile.self) private var profile
+
     var body: some View {
-        Image(systemName: "person.crop.circle.fill")
-            .font(.system(size: 26))
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(.black, Color(.systemGray5))
+        if let avatarImage = profile.avatarImage {
+            avatarImage
+                .resizable()
+                .scaledToFill()
+                .frame(width: 22, height: 22)
+                .clipShape(Circle())
+        } else {
+            Image(systemName: "person.crop.circle.fill")
+                .font(.system(size: 22))
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(.black, Color(.systemGray5))
+        }
     }
 }
 
