@@ -1,24 +1,25 @@
-//
-//  ContentView.swift
-//  Touch
-//
-//  Created by boris on 2/12/26.
-//
-
 import SwiftUI
 
-struct ContentView: View {
+struct MainTabView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            ChatsView()
+                .tabItem {
+                    Image(systemName: "message.fill")
+                    Text("Chats")
+                }
+
+            CallsView()
+                .tabItem {
+                    Image(systemName: "phone.fill")
+                    Text("Calls")
+                }
         }
-        .padding()
+        .tint(.black)
     }
 }
 
 #Preview {
-    ContentView()
+    MainTabView()
+        .environment(ChatViewModel())
 }

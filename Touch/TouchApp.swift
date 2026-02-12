@@ -1,17 +1,13 @@
-//
-//  TouchApp.swift
-//  Touch
-//
-//  Created by boris on 2/12/26.
-//
-
 import SwiftUI
 
 @main
-struct TouchApp: App {
+struct MessengerApp: App {
+    @State private var chatViewModel = ChatViewModel()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
+                .environment(chatViewModel)
         }
     }
 }
