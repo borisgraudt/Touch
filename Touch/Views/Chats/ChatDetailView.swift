@@ -58,13 +58,18 @@ struct ChatDetailView: View {
         }
         .navigationTitle(chat.contactName)
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.loadMessages(for: chat.id)
+        }
     }
 
     private func sendMessage() {
         let text = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
-        viewModel.sendMessage(to: chat.id, text: text)
         messageText = ""
+        Task {
+            await viewModel.sendMessage(to: chat.id, text: text)
+        }
     }
 }
 

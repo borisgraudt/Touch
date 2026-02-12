@@ -45,7 +45,6 @@ struct ChatsView: View {
                                     Image(systemName: chat.isPinned ? "pin.slash.fill" : "pin.fill")
                                 }
                                 .tint(.green)
-
                             }
                         }
                     }
@@ -84,6 +83,9 @@ struct ChatsView: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
+            }
+            .task {
+                await viewModel.loadChats()
             }
         }
     }
@@ -136,19 +138,22 @@ struct ChatRow: View {
                 )
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(chat.contactName)
-                    .font(.headline)
+                HStack {
+                    Text(chat.contactName)
+                        .font(.headline)
+
+                    Spacer()
+
+                    Text(chat.lastMessageDate, style: .time)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
                 Text(chat.lastMessageText)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .lineLimit(2)
             }
-
-            Spacer()
-
-            Text(chat.lastMessageDate, style: .time)
-                .font(.caption)
-                .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
     }

@@ -3,7 +3,10 @@ import PhotosUI
 
 @Observable
 class UserProfile {
-    var username: String {
+
+    var errorMessage: String?
+
+    var phoneNumber: String {
         didSet { save() }
     }
     var displayName: String {
@@ -19,26 +22,51 @@ class UserProfile {
     }
 
     var isLoggedIn: Bool {
-        !username.isEmpty
+        !phoneNumber.isEmpty
     }
+
+    private let api = APIClient.shared
 
     init() {
         let defaults = UserDefaults.standard
-        self.username = defaults.string(forKey: "username") ?? ""
+        self.phoneNumber = defaults.string(forKey: "phoneNumber") ?? ""
         self.displayName = defaults.string(forKey: "displayName") ?? ""
         self.avatarData = defaults.data(forKey: "avatarData")
     }
 
     func save() {
         let defaults = UserDefaults.standard
-        defaults.set(username, forKey: "username")
+        defaults.set(phoneNumber, forKey: "phoneNumber")
         defaults.set(displayName, forKey: "displayName")
         defaults.set(avatarData, forKey: "avatarData")
     }
 
+    func sendCode(to phone: String) async {
+        do {
+            try await api.sendCode(phoneNumber: phone)
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func verifyCode(_ code: String, for phone: String) async -> Bool {
+        do {
+            let response = try await api.verifyCode(code, phoneNumber: phone)
+            phoneNumber = response.user.phoneNumber
+            displayName = response.user.displayName
+            errorMessage = nil
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
+    }
+
     func logout() {
-        username = ""
+        phoneNumber = ""
         displayName = ""
         avatarData = nil
+        api.logout()
     }
 }

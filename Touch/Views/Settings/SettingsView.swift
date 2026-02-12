@@ -44,11 +44,11 @@ struct SettingsView: View {
                 // Profile info
                 Section("Profile") {
                     HStack {
-                        Text("Username")
+                        Text("Phone")
                             .foregroundStyle(.secondary)
                         Spacer()
-                        TextField("username", text: $profile.username)
-                            .multilineTextAlignment(.trailing)
+                        Text(profile.phoneNumber)
+                            .foregroundStyle(.primary)
                     }
 
                     HStack {

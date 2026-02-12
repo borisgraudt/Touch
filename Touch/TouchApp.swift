@@ -7,9 +7,15 @@ struct MessengerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(chatViewModel)
-                .environment(userProfile)
+            if userProfile.isLoggedIn {
+                MainTabView()
+                    .environment(chatViewModel)
+                    .environment(userProfile)
+            } else {
+                LoginView()
+                    .environment(userProfile)
+                // Note: chatViewModel не добавляем сюда, т.к. он не нужен для логина
+            }
         }
     }
 }
